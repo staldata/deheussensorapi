@@ -1,718 +1,1708 @@
----
-swagger: "2.0"
+components:
+  parameters:
+    asset:
+      description: Asset id
+      in: path
+      name: asset
+      required: true
+      schema:
+        format: int32
+        type: integer
+    metric:
+      description: Metric id
+      in: path
+      name: metric
+      required: true
+      schema:
+        format: int32
+        type: integer
+    rule:
+      description: Alarm rule id
+      in: path
+      name: rule
+      required: true
+      schema:
+        format: int32
+        type: integer
+    sensor:
+      description: Sensor id
+      in: path
+      name: sensor
+      required: true
+      schema:
+        format: int32
+        type: integer
+    sensortype:
+      description: Sensor type code
+      in: path
+      name: sensortype
+      required: true
+      schema:
+        type: string
+  schemas:
+    common.BaseResponse:
+      description: Base API response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+      type: object
+    common.Dictionary:
+      additionalProperties:
+        type: string
+      type: object
+    common.ErrorDesc:
+      description: Error
+      properties:
+        id:
+          description: Unique incident identifier
+          type: string
+        message:
+          description: Error text
+          type: string
+      type: object
+    common.FKNamedObj:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    common.Link:
+      properties:
+        args:
+          $ref: '#/components/schemas/common.Dictionary'
+        href:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    common.LinkDesc:
+      description: Link to related resource
+      properties:
+        href:
+          description: Link to related resource
+          type: string
+        name:
+          description: Link name
+          type: string
+        rel:
+          description: Link relation. Use to find link by relation value
+          type: string
+      type: object
+    sensor.AlarmInfo:
+      description: Alarm information
+      properties:
+        alarmed:
+          description: Entered alarms state
+          format: date-time
+          type: string
+        id:
+          description: Alarm id
+          type: string
+        metric:
+          description: Metric id
+          type: string
+        note:
+          description: Alarm note
+          type: string
+        resolved:
+          description: Alarm resolved
+          format: date-time
+          type: string
+        rule:
+          description: Alarm rule id
+          type: string
+        sensor:
+          description: Sensor id
+          type: string
+        severity:
+          description: Alarm severity
+          type: integer
+        threshold:
+          description: Threshold direction
+          type: string
+        unit:
+          description: Unit id
+          type: string
+        value:
+          description: Threshold value
+          type: number
+        worst:
+          description: Worst value during alarm period
+          type: number
+      type: object
+    sensor.AlarmRuleInfo:
+      description: Alarm rule information
+      properties:
+        created:
+          description: Rule creation date
+          format: date-time
+          type: string
+        id:
+          description: Rule id
+          type: string
+        metric:
+          description: Metric
+          type: string
+        name:
+          description: Rule display name
+          type: string
+        notes:
+          description: Rule notes
+          type: string
+      type: object
+    sensor.AlarmRuleListResponse:
+      description: Alarms rule response with collection of entities
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        rules:
+          description: Alarm rule data
+          items:
+            $ref: '#/components/schemas/sensor.AlarmRuleInfo'
+          type: array
+      type: object
+    sensor.AlarmsListResponse:
+      description: Alarms response with collection of entities (actual or historical)
+      properties:
+        alarms:
+          description: Alarm data
+          items:
+            $ref: '#/components/schemas/sensor.AlarmInfo'
+          type: array
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        self:
+          description: Self link
+          type: string
+      type: object
+    sensor.AssetDesc:
+      description: Asset information
+      properties:
+        files:
+          description: Attachments
+          items:
+            $ref: '#/components/schemas/common.LinkDesc'
+          type: array
+        id:
+          description: Asset id
+          type: string
+        location:
+          description: Asset location
+          type: string
+        name:
+          description: Name
+          type: string
+        notes:
+          description: Notes
+          type: string
+        points:
+          description: Measurement points
+          items:
+            $ref: '#/components/schemas/sensor.MeasurementPointDesc'
+          type: array
+        tags:
+          description: Tags
+          items:
+            type: string
+          type: array
+      type: object
+    sensor.AssetSensorDesc:
+      description: Sensor to Asset association
+      properties:
+        id:
+          description: Association id
+          type: string
+        placed:
+          description: Sensor attached to asset
+          format: date-time
+          type: string
+        removed:
+          description: Sensor removed from asset
+          format: date-time
+          type: string
+        sensor:
+          description: Sensor id
+          type: string
+      type: object
+    sensor.Assets:
+      description: Assets response with collection of entities
+      properties:
+        assets:
+          description: Assets collection
+          items:
+            $ref: '#/components/schemas/sensor.AssetDesc'
+          type: array
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+      type: object
+    sensor.MeasurementPointDesc:
+      description: Measurement point information
+      properties:
+        associations:
+          description: Attached sensors
+          items:
+            $ref: '#/components/schemas/sensor.AssetSensorDesc'
+          type: array
+        id:
+          description: Measurement point id
+          type: string
+        name:
+          description: Name
+          type: string
+        skills:
+          description: Provided metrics
+          items:
+            $ref: '#/components/schemas/sensor.MeasurementPointSkillDesc'
+          type: array
+      type: object
+    sensor.MeasurementPointSkillDesc:
+      description: Metrics provided by to measurement point attached sensors
+      properties:
+        active:
+          description: True if measurement point configured to view the metric and
+            current sensor provides measurements of this metric
+          type: boolean
+        metric:
+          description: Metric id
+          type: string
+      type: object
+    sensor.MetricInfo:
+      description: Sensor metric data
+      properties:
+        icon:
+          description: Icon name
+          type: string
+        id:
+          description: Metric id
+          type: string
+        name:
+          description: Localized metric name
+          type: string
+        sensors:
+          description: Count of sensors measuring metric
+          type: integer
+        units:
+          description: Units
+          items:
+            $ref: '#/components/schemas/sensor.UnitInfo'
+          type: array
+      type: object
+    sensor.MetricListResponse:
+      description: Metrics response with collection of entities
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        metrics:
+          description: Metric data
+          items:
+            $ref: '#/components/schemas/sensor.MetricInfo'
+          type: array
+      type: object
+    sensor.MetricResponse:
+      description: Metric entity response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        metric:
+          $ref: '#/components/schemas/sensor.MetricInfo'
+      type: object
+    sensor.PairingDesc:
+      properties:
+        base:
+          type: string
+        paired:
+          type: string
+        removed:
+          type: string
+      type: object
+    sensor.ReadingDesc:
+      description: Sensor measurement of specified metric
+      properties:
+        asset:
+          $ref: '#/components/schemas/common.Link'
+        metric:
+          description: Metric id
+          type: string
+        novelty:
+          description: |-
+            Last measurement novelty according to sensor data update intervals - once per 1/2/5/10 minutes
+            |Code    |Description                                    |
+            |--------|-----------------------------------------------|
+            |new     |Last measurement is new                        |
+            |expiring|Last measurement is older than 3 update periods|
+            |old     |Last measurement is older than 6 update periods|
+          type: string
+        point:
+          $ref: '#/components/schemas/common.Link'
+        sensor:
+          description: Sensor id
+          type: string
+        time:
+          description: Measurement timestamp
+          format: date-time
+          type: string
+        unit:
+          description: Measurement unit id
+          type: string
+        value:
+          description: Value
+          type: number
+      type: object
+    sensor.ReadingsListResponse:
+      description: Sensor measurements
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        next:
+          description: Next page link if query data exceeds page size
+          type: string
+        readings:
+          description: Sensor readings
+          items:
+            $ref: '#/components/schemas/sensor.ReadingDesc'
+          type: array
+        self:
+          description: Self link
+          type: string
+      type: object
+    sensor.SensorDesc:
+      description: Sensor measuring capabilities
+      properties:
+        bases:
+          description: Sensor paired with bases
+          items:
+            type: string
+          type: array
+        files:
+          description: Attachments
+          items:
+            $ref: '#/components/schemas/common.LinkDesc'
+          type: array
+        id:
+          description: Sensor identifier
+          type: string
+        name:
+          description: User name for sensor given during base configuration
+          type: string
+        pairing:
+          description: Sensor paired with bases info
+          items:
+            $ref: '#/components/schemas/sensor.PairingDesc'
+          type: array
+        sensorId:
+          description: Sensor identifier on the device e.g. "034B6"
+          type: string
+        skills:
+          description: Sensor measuring capabilities
+          items:
+            $ref: '#/components/schemas/sensor.SkillDesc'
+          type: array
+        tags:
+          description: Tags
+          items:
+            type: string
+          type: array
+        type:
+          description: Sensor type
+          type: string
+      type: object
+    sensor.SensorListResponse:
+      description: Sensors data response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        sensors:
+          description: Sensors collection
+          items:
+            $ref: '#/components/schemas/sensor.SensorDesc'
+          type: array
+      type: object
+    sensor.SensorTypeDescr:
+      description: Sensor type description
+      properties:
+        icon:
+          type: string
+        id:
+          type: string
+        isVirtual:
+          description: 'Boolean type: true if segment >= 128'
+          type: boolean
+        name:
+          type: string
+      type: object
+    sensor.SensorTypeListResponse:
+      description: Sensor Type list response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        sensorTypes:
+          description: Sensor Type data
+          items:
+            $ref: '#/components/schemas/sensor.SensorTypeDescr'
+          type: array
+      type: object
+    sensor.SensorTypeResponse:
+      description: Sensor Type entity response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        sensorType:
+          $ref: '#/components/schemas/sensor.SensorTypeDescr'
+      type: object
+    sensor.SkillDesc:
+      description: Sensor capability
+      properties:
+        active:
+          description: Metric is in use now
+          type: boolean
+        metric:
+          description: Measuring metric
+          type: string
+      type: object
+    sensor.UnitInfo:
+      description: Metric unit data
+      properties:
+        default:
+          description: True for default unit
+          type: boolean
+        id:
+          description: Unit id
+          type: string
+        name:
+          description: Unit name
+          type: string
+        precision:
+          description: Unit precision
+          type: integer
+        selected:
+          description: True for choosen unit
+          type: boolean
+      type: object
+    tags.TagDesc:
+      description: TagDesc describes tag object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        notes:
+          type: string
+        type:
+          $ref: '#/components/schemas/tags.TagType'
+      type: object
+    tags.TagListResponse:
+      description: Tag response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        tags:
+          description: Tag data
+          items:
+            $ref: '#/components/schemas/tags.TagDesc'
+          type: array
+      type: object
+    tags.TagResponse:
+      description: Tag response
+      properties:
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+        tag:
+          $ref: '#/components/schemas/tags.TagDesc'
+      type: object
+    tags.TagType:
+      description: Tag type entity
+      properties:
+        color: {}
+        icon: {}
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    tenant.BaseInfo:
+      description: Aranet Pro base
+      properties:
+        baseSensors: {}
+        board:
+          type: string
+        config:
+          $ref: '#/components/schemas/tenant.ConfigDesc'
+        firmware:
+          type: string
+        id:
+          type: string
+        lastSeen:
+          description: 'TODO: check type for BaseInfo'
+          format: date-time
+          type: string
+        name:
+          type: string
+        pausedate:
+          format: date-time
+          type: string
+        product:
+          type: string
+        regdate:
+          format: date-time
+          type: string
+        region:
+          type: string
+        self:
+          description: Base self link
+          type: string
+        sensors:
+          description: Link to sensors paired with this base
+          type: string
+        tags:
+          description: Tags
+          items:
+            type: string
+          type: array
+        upgrade:
+          type: string
+      type: object
+    tenant.BaseListResponse:
+      description: Aranet base collection response
+      properties:
+        bases:
+          description: Bases
+          items:
+            $ref: '#/components/schemas/tenant.BaseInfo'
+          type: array
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+      type: object
+    tenant.BaseResponse:
+      description: Aranet base response
+      properties:
+        base:
+          $ref: '#/components/schemas/tenant.BaseInfo'
+        error:
+          description: Errors for error response (500 InternalServerError) or warnings
+            if successful response (200 OK)
+          items:
+            $ref: '#/components/schemas/common.ErrorDesc'
+          type: array
+        links:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/common.LinkDesc'
+            type: array
+          description: Links to related resources
+          type: object
+      type: object
+    tenant.ConfigDesc:
+      properties:
+        bacnet:
+          $ref: '#/components/schemas/tenant.bacnetDesc'
+        ethernet:
+          $ref: '#/components/schemas/tenant.ethernetDesc'
+        gsm:
+          $ref: '#/components/schemas/tenant.enabledDesc'
+        lte:
+          $ref: '#/components/schemas/tenant.lteDesc'
+        modbus:
+          $ref: '#/components/schemas/tenant.modbusDesc'
+        modified:
+          format: date-time
+          type: string
+        mqtt:
+          $ref: '#/components/schemas/tenant.mqttDesc'
+        ntp:
+          $ref: '#/components/schemas/tenant.ntpDesc'
+        snmp:
+          $ref: '#/components/schemas/tenant.enabledDesc'
+        wifi:
+          $ref: '#/components/schemas/tenant.wifiDesc'
+      type: object
+    tenant.bacnetDesc:
+      properties:
+        deviceID:
+          type: string
+        enabled:
+          type: boolean
+        location:
+          type: string
+        networkID:
+          type: string
+        objType:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        port:
+          type: integer
+      type: object
+    tenant.enabledDesc:
+      properties:
+        enabled:
+          type: boolean
+      type: object
+    tenant.ethernetDesc:
+      properties:
+        dns:
+          type: string
+        fallback:
+          type: boolean
+        gateway:
+          type: string
+        ipaddr:
+          type: string
+        ipconfig:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        netmask:
+          type: string
+      type: object
+    tenant.lteDesc:
+      properties:
+        apn:
+          type: string
+        enabled:
+          type: boolean
+      type: object
+    tenant.modbusDesc:
+      properties:
+        addresses:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        enabled:
+          type: boolean
+        port:
+          type: integer
+      type: object
+    tenant.mqttDesc:
+      properties:
+        authenticated:
+          type: boolean
+        enabled:
+          type: boolean
+        encryption:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        format:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        host:
+          type: string
+        port:
+          type: integer
+        protocol:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        qos:
+          type: string
+        rootTopic:
+          type: string
+        user:
+          type: string
+      type: object
+    tenant.ntpDesc:
+      properties:
+        enabled:
+          type: boolean
+        servers:
+          items:
+            type: string
+          type: array
+      type: object
+    tenant.wifiDesc:
+      properties:
+        channel:
+          type: integer
+        country:
+          type: string
+        dns:
+          type: string
+        enabled:
+          type: boolean
+        encryption:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        gateway:
+          type: string
+        ipaddr:
+          type: string
+        ipconfig:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        mode:
+          $ref: '#/components/schemas/common.FKNamedObj'
+        netmask:
+          type: string
+        ssid:
+          type: string
+        txpower:
+          type: integer
+      type: object
+  securitySchemes:
+    ApiKey:
+      in: header
+      name: ApiKey
+      type: apiKey
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  title: Aranet Cloud API
+  version: "1.0"
+openapi: 3.0.3
 paths:
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
+  /api/v1/alarms/actual:
+    get:
+      operationId: Alarms.Api.Actual
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.AlarmsListResponse'
+          description: Alarms collection response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
-    post:
+      - ApiKey: []
+      summary: Actual alarms
       tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - alarms
+  /api/v1/alarms/history:
+    get:
+      operationId: Alarms.Api.History
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+      - description: Time period from
+        in: query
+        name: from
+        schema:
+          format: date-time
+          type: string
+      - description: Time period to
+        in: query
+        name: to
+        schema:
+          format: date-time
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.AlarmsListResponse'
+          description: Alarms collection response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Historical alarms
+      tags:
+      - alarms
+  /api/v1/alarms/rules:
+    get:
+      operationId: Alarms.Api.RulesList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.AlarmRuleListResponse'
+          description: Alarm rules collection response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Alarm rules
+      tags:
+      - alarms
+  /api/v1/alarms/rules/rule/{rule}:
+    get:
+      operationId: Alarms.Api.RulesRead
+      parameters:
+      - $ref: '#/components/parameters/rule'
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Alarms.Api.RulesRead
+      tags:
+      - alarms
+  /api/v1/assets:
+    get:
+      operationId: Assets.Api.List
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.Assets'
+          description: Assets collection response
+      security:
+      - ApiKey: []
+      summary: Assets
+      tags:
+      - assets
+  /api/v1/assets/asset/{asset}:
+    get:
+      operationId: Assets.Api.Read
+      parameters:
+      - $ref: '#/components/parameters/asset'
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Assets.Api.Read
+      tags:
+      - assets
+  /api/v1/assets/asset/{asset}/attachment/{attid}:
+    get:
+      operationId: Attachment.Api.Asset.Attachment.Info
+      parameters:
+      - $ref: '#/components/parameters/asset'
+      - in: path
+        name: attid
         required: true
         schema:
-          $ref: "#/definitions/Pet"
+          type: string
       responses:
-        405:
-          description: "Invalid input"
+        "200":
+          description: OK
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
+      - ApiKey: []
+      summary: Attachment.Api.Asset.Attachment.Info
       tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - attachment
+  /api/v1/assets/asset/{asset}/attachment/{attid}/file:
+    get:
+      operationId: Attachment.Api.Asset.Attachment.Data
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+      - $ref: '#/components/parameters/asset'
+      - in: path
+        name: attid
         required: true
         schema:
-          $ref: "#/definitions/Pet"
+          type: string
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
+        "200":
+          description: OK
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
+      - ApiKey: []
+      summary: Attachment.Api.Asset.Attachment.Data
+      tags:
+      - attachment
+  /api/v1/assets/asset/{asset}/attachment/{attid}/thumbnail:
     get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
+      operationId: Attachment.Api.Asset.Attachment.Thumbnail
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
+      - $ref: '#/components/parameters/asset'
+      - in: path
+        name: attid
         required: true
         schema:
-          $ref: "#/definitions/Order"
+          type: string
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
+        "200":
+          description: OK
       security:
-      - api_key: []
-  /user/createWithArray:
-    post:
+      - ApiKey: []
+      summary: Attachment.Api.Asset.Attachment.Thumbnail
       tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
+      - attachment
+  /api/v1/bases:
     get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
+      operationId: Base.Api.List
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tenant.BaseListResponse'
+          description: All aranet bases
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: List of all base stations registered into Cloud.
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - base
+  /api/v1/bases/base/{base}:
+    get:
+      operationId: Base.Api.Read
       parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
+      - description: Base station ID
+        in: path
+        name: base
         required: true
         schema:
-          $ref: "#/definitions/User"
+          type: string
       responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tenant.BaseResponse'
+          description: Aranet base
+      security:
+      - ApiKey: []
+      summary: Metadata of one base station.
       tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
+      - base
+  /api/v1/measurements/history:
     get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
+      description: Sensor and asset measurements for a specific period. If parameters
+        are not selected, the endpoint returns the last 24-hour measurements for all
+        sensors and assets and the maximum period available is 7 days.
+      operationId: Measurements.Api.MeasurementsHistoryList
       parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
+      - description: Comma-separated sensor IDs. If the parameter is set, then the
+          default period is 7 days and the maximum period available is 6 months.
+        in: query
+        name: sensor
+        schema:
+          type: string
+      - description: Comma-separated asset IDs. If the parameter is set, then the
+          default period is last 24-hours and the maximum period available is 6 months.
+        in: query
+        name: asset
+        schema:
+          type: string
+      - description: Comma-separated point IDs. If the parameter is set, then the
+          default period is last 24-hours and the maximum period available is 6 months.
+        in: query
+        name: point
+        schema:
+          type: string
+      - description: Comma-separated metric IDs. If the parameter is set, the endpoint
+          returns measurements for the selected metric only.
+        in: query
+        name: metric
+        schema:
+          type: string
+      - description: Comma separated list of unit IDs. Not valid for application/senml+json
+          format.
+        in: query
+        name: unit
+        schema:
+          type: string
+      - description: 'UTC date for the start of the period. Date format: YYYY-MM-DD
+          (HH:MM optional)'
+        in: query
+        name: from
+        schema:
+          format: date-time
+          type: string
+      - description: 'UTC date for the end of the period. Date format: YYYY-MM-DD
+          (HH:MM optional).'
+        in: query
+        name: to
+        schema:
+          format: date-time
+          type: string
+      - description: Query measurements for the last n seconds.
+        in: query
+        name: seconds
+        schema:
+          type: integer
+      - description: Query measurements for the last n minutes.
+        in: query
+        name: minutes
+        schema:
+          type: integer
+      - description: Query measurements for the last n hours.
+        in: query
+        name: hours
+        schema:
+          type: integer
+      - description: Query measurements for the last n days (including the current
+          day). The start of the day is defined by the UTC time zone
+        in: query
+        name: days
+        schema:
+          type: integer
+      - description: Next page token. Use a link from ReadingsListResponse.next or
+          NextLink response header. Due to optimization, the last page can be empty.
+        in: query
+        name: next
+        schema:
+          type: string
+      - description: Rows per page. Due to optimization, the page size can be less
+          than the set limit.
+        in: query
+        name: limit
+        schema:
+          type: string
+      - description: Include links to the related resources. Enabled by default.
+        in: query
+        name: links
+        schema:
+          type: boolean
       responses:
-        200:
-          description: "successful operation"
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+          description: Historical measurements from sensors and assets.
           headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
+            NextLink:
+              description: Link with all parameters plus next page token if limited
+                row count in response.
+              schema:
+                type: string
+      security:
+      - ApiKey: []
+      summary: Sensor and asset measurement history
+      tags:
+      - measurements
+  /api/v1/measurements/last:
     get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+      description: Last recorded measurement for each individual sensor and asset.
+        By default all sensors and assets are selected.
+      operationId: Measurements.Api.MeasurementsLastList
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
+      - description: Comma-separated sensor IDs.
+        in: query
+        name: sensor
+        schema:
+          type: string
+      - description: Comma-separated asset IDs.
+        in: query
+        name: asset
+        schema:
+          type: string
+      - description: Comma-separated point IDs.
+        in: query
+        name: point
+        schema:
+          type: string
+      - description: Coma separated metric IDs.
+        in: query
+        name: metric
+        schema:
+          type: string
+      - description: Comma-separated list of unit IDs. Not valid for application/senml+json
+          format.
+        in: query
+        name: unit
+        schema:
+          type: string
+      - description: Include links to the related resources. Enabled by default.
+        in: query
+        name: links
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+          description: Last measurements from sensors and assets.
+      security:
+      - ApiKey: []
+      summary: Last measurements
+      tags:
+      - measurements
+  /api/v1/metrics:
+    get:
+      operationId: Metrics.Api.List
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.MetricListResponse'
+          description: Metrics collection response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: List of available metrics
+      tags:
+      - metrics
+  /api/v1/metrics/{metric}:
+    get:
+      operationId: Metrics.Api.Read
+      parameters:
+      - $ref: '#/components/parameters/metric'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.MetricResponse'
+          description: Metric response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Metric data
+      tags:
+      - metrics
+  /api/v1/sensors:
+    get:
+      operationId: Sensors.Api.List
+      parameters:
+      - description: Comma separated base station IDs to be used as filter. Sensors
+          from all base stations will be included by default.
+        in: query
+        name: base
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.SensorListResponse'
+          description: Sensors data
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Metadata of all the sensors.
+      tags:
+      - sensors
+  /api/v1/sensors/sensor/{sensor}:
+    get:
+      operationId: Sensors.Api.Read
+      parameters:
+      - $ref: '#/components/parameters/sensor'
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Sensors.Api.Read
+      tags:
+      - sensors
+  /api/v1/sensors/sensor/{sensor}/attachment/{attid}:
+    get:
+      operationId: Attachment.Api.Attachment.Info
+      parameters:
+      - $ref: '#/components/parameters/sensor'
+      - in: path
+        name: attid
         required: true
         schema:
-          $ref: "#/definitions/User"
+          type: string
       responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Attachment.Api.Attachment.Info
       tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+      - attachment
+  /api/v1/sensors/sensor/{sensor}/attachment/{attid}/file:
+    get:
+      operationId: Attachment.Api.Attachment.Data
+      parameters:
+      - $ref: '#/components/parameters/sensor'
+      - in: path
+        name: attid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Attachment.Api.Attachment.Data
+      tags:
+      - attachment
+  /api/v1/sensors/sensor/{sensor}/attachment/{attid}/thumbnail:
+    get:
+      operationId: Attachment.Api.Attachment.Thumbnail
+      parameters:
+      - $ref: '#/components/parameters/sensor'
+      - in: path
+        name: attid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Attachment.Api.Attachment.Thumbnail
+      tags:
+      - attachment
+  /api/v1/sensors/types:
+    get:
+      operationId: Sensors.Api.Type.List
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.SensorTypeListResponse'
+          description: Sensor types collection response
+      security:
+      - ApiKey: []
+      summary: List of all available sensor types.
+      tags:
+      - sensors
+  /api/v1/sensors/types/type/{sensortype}:
+    get:
+      operationId: Sensors.Api.Type.Read
+      parameters:
+      - $ref: '#/components/parameters/sensortype'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.SensorTypeResponse'
+          description: Sensor type response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Sensor type metadata.
+      tags:
+      - sensors
+  /api/v1/tags:
+    get:
+      description: List of all tags.
+      operationId: Tag.Api.List
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags.TagListResponse'
+          description: Tags
+      security:
+      - ApiKey: []
+      summary: All tags
+      tags:
+      - tag
+  /api/v1/tags/tag/{tag}:
+    get:
+      description: Data of a single tag element.
+      operationId: Tag.Api.Info
+      parameters:
+      - description: ID of a tag.
+        in: path
+        name: tag
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tags.TagResponse'
+          description: Tag response data
+      security:
+      - ApiKey: []
+      summary: Single tag
+      tags:
+      - tag
+  /api/v1/telemetry/history:
+    get:
+      description: Novelty value is not relevant for historical measurements
+      operationId: Telemetry.Api.TelemetryHistoryList
+      parameters:
+      - description: Comma separated sensor serial codes. First 3 sensors by default
+        in: query
+        name: sensor
+        schema:
+          type: string
+      - description: Filter measurements by comma separated list of metric ids (optional)
+        in: query
+        name: metric
+        schema:
+          type: string
+      - description: Express measurements using units given by comma separated list
+          of unit ids. Not valid for application/senml+json
+        in: query
+        name: unit
+        schema:
+          type: string
+      - description: Time period from
+        in: query
+        name: from
+        schema:
+          format: date-time
+          type: string
+      - description: Time period to
+        in: query
+        name: to
+        schema:
+          format: date-time
+          type: string
+      - description: Query measurements for last n seconds
+        in: query
+        name: seconds
+        schema:
+          type: integer
+      - description: Query measurements for last n minutes
+        in: query
+        name: minutes
+        schema:
+          type: integer
+      - description: Query measurements for last n hours
+        in: query
+        name: hours
+        schema:
+          type: integer
+      - description: Query measurements for last n days
+        in: query
+        name: days
+        schema:
+          type: integer
+      - description: Next page token. Use link from ReadingsListResponse.next or NextLink
+          response header. Due to optimization last page could be empty
+        in: query
+        name: next
+        schema:
+          type: string
+      - description: Rows per page. Due to optimization result page size could be
+          less than limit
+        in: query
+        name: limit
+        schema:
+          type: string
+      - description: Include links to related resources. Enabled by default
+        in: query
+        name: links
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+          description: Historical measurements from sensors
+          headers:
+            NextLink:
+              description: Link with all parameters plus next page token if limited
+                row count in response
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Query sensor measurements for period
+      tags:
+      - telemetry
+  /api/v1/telemetry/last:
+    get:
+      operationId: Telemetry.Api.TelemetryLastList
+      parameters:
+      - description: Filter telemetry by comma separated list of sensor ids (optional)
+        in: query
+        name: sensor
+        schema:
+          type: string
+      - description: Filter telemetry by comma separated list of metric ids (optional)
+        in: query
+        name: metric
+        schema:
+          type: string
+      - description: Include links to related resources. Enabled by default
+        in: query
+        name: links
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/sensor.ReadingsListResponse'
+          description: Last telemetry from sensors
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+            application/senml+json:
+              schema:
+                $ref: '#/components/schemas/common.BaseResponse'
+          description: Error message
+      security:
+      - ApiKey: []
+      summary: Query last telemetry for sensors
+      tags:
+      - telemetry
+  /api/v1/units/unit/{unit}:
+    get:
+      operationId: Metrics.Api.UnitRead
+      parameters:
+      - in: path
+        name: unit
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKey: []
+      summary: Metrics.Api.UnitRead
+      tags:
+      - metrics
+tags:
+- description: Description for alarms
+  name: alarms
+- description: Description for assets
+  name: assets
+- description: Description for attachment
+  name: attachment
+- description: Description for base
+  name: base
+- description: Description for measurements
+  name: measurements
+- description: Description for metrics
+  name: metrics
+- description: Description for sensors
+  name: sensors
+- description: Description for tag
+  name: tag
+- description: Description for telemetry
+  name: telemetry
